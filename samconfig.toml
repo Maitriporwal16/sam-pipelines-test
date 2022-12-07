@@ -1,0 +1,36 @@
+version = 0.1
+[dev]
+[dev.deploy]
+[dev.deploy.parameters]
+s3_bucket = "testpath1"
+region = "us-east-1"
+confirm_changeset = false
+capabilities = ["CAPABILITY_AUTO_EXPAND","CAPABILITY_NAMED_IAM"]
+image_repositories = []
+stack_name = "dev"
+s3_prefix = "dev"
+parameter_overrides = [
+    "env=dev",
+    "RepositoryId=kalravparsana/Tbrapikalravtest",
+    "AppRepositoryId=kalravparsana/Tbrappkalravtest",
+    "AdminRepositoryId=kalravparsana/Tbradminkalravtest",
+    "CICDBucketLocation=testpath1"
+]
+
+[prod]
+[prod.deploy]
+[prod.deploy.parameters]
+s3_bucket = "samTbrdeploymenttemp"
+region = "us-east-1"
+confirm_changeset = false
+capabilities = ["CAPABILITY_AUTO_EXPAND","CAPABILITY_NAMED_IAM"]
+image_repositories = []
+stack_name = "prod"
+s3_prefix = "prod"
+parameter_overrides = [
+    "env=prod",
+    "RepositoryId=Tbrdev/Tbrapi",
+    "AppRepositoryId=Tbrdev/Tbrapp",
+    "AdminRepositoryId=Tbrdev/Tbradmin",
+    "CICDBucketLocation=samTbrdeploymenttemp"
+]

@@ -1,0 +1,35 @@
+version: 0.2
+
+
+phases:
+  # pre_build:
+  #   commands:
+  #     - npm i
+  #     - npm install -g ionic
+  #     - rm -rf .env
+  #     - touch .env
+  #     - echo STAND_THRESHOLD=34.5 > .env
+  #     - echo OAUTH_APP_ID='ion-dev-v1' >> .env
+  #     - echo COGNITO_POOL_ID=${COGNITO_POOL_ID} >> .env
+  #     - echo COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID} >> .env
+  #     - echo SERVER_URL='https://v2api.standata.com' >> .env
+  #     - echo VERSION_CODE='0.1.14' >> .env
+  #     - echo FIREBASE_API_KEY='AIzaSyD2CvS1YRmC_JTN7vEvMFnZyBor7F_pt5g' >> .env
+  #     - echo FIREBASE_AUTH_DOMAIN='standata-app.firebaseapp.com' >> .env
+  #     - echo FIREBASE_PROJECT_ID='standata-app' >> .env
+  #     - echo FIREBASE_STORAGE_BUCKET='standata-app.appspot.com' >> .env
+  #     - echo FIREBASE_MESSAGING_SENDER_ID='643009171340' >> .env
+  #     - echo FIREBASE_APP_ID='1:643009171340:web:d6c154bfa1bfb5b5d710a9' >> .env
+  #     - echo FIREBASE_MEASUREMENT_ID='G-V3KKDLTKJ7' >> .env
+  #     - echo FIREBASE_VAPID_KEY='BJbi9Us3Jd6xrXuDCz-boWbtkVtbp_tst7mpFP0tnxbGJ52ItNk0Bh2_jeZZ6ShwnSvNO-guXfCjDaIx0k4nISw' >> .env
+  #     - cat .env
+  build:
+    commands:
+      - npm run configure
+      - ionic build --prod
+      # - aws s3 sync www/ "s3://${BUCKET_NAME}" --acl=public-read --delete
+      # - aws cloudfront create-invalidation --distribution-id "${CLOUDFRONT_ID}" --paths "/*"
+artifacts:
+  files:
+    - '**/*'
+  base-directory: www

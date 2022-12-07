@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    Tbr-backend
+
+Conditions:
+  IsProd: !Equals [!Ref env, prod]
+
+Parameters:
+    env:
+        Type: String
+        Description: Which environment do you want to deploy to? (local,dev,stage, or prod)
+        Default: prod
+
+    ConnectionArn:
+        Type: String
+        
+    RepositoryId:
+        Type: String
+
+    AppRepositoryId:
+        Type: String
+
+    AppBranchName:
+        Type: String
+
+    CICDBucketLocation:
+        Type: String
+    
+    CognitoPoolId:
+        Type: String
+
+    CognitoClientId:
+        Type: String
+
+Resources:
+    TbrAppHosting:
+      Type: AWS::Serverless::Application
+      Properties:
+        Location: app-hosting-stack.yml
+        Parameters:
+            env: !Ref env        
+
+    TbrAppCodePipeline:
+      Type: AWS::Serverless::Application
+      Properties:
+        Location: app-cicd-stack.yml
+        Parameters:
+            env: !Ref env
+            ConnectionArn: !Ref ConnectionArn
+            RepositoryId: !Ref AppRepositoryId
+            BranchName: !Ref AppBranchName
+            CICDBucketLocation: !Ref CICDBucketLocation
+            HostingBucketName: !GetAtt TbrAppHosting.Outputs.HostingBucketName
+            CloudFrontDistributionID: !GetAtt TbrAppHosting.Outputs.CloudFrontDistributionID
+            # CognitoPoolId: !Ref CognitoPoolId
+            # CognitoClientId: !Ref CognitoClientId

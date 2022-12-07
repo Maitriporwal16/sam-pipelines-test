@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Tbr-backend
+    
+
+Parameters:
+    env:
+        Type: String
+        Description: Which environment do you want to deploy to? (local,dev,stage, or prod)
+        Default: prod
+    RepositoryId:
+        Type: String
+
+    CICDBucketLocation:
+        Type: String
+
+    AppRepositoryId:
+        Type: String
+
+    AdminRepositoryId:
+        Type: String
+
+
+Conditions:
+  IsProd: !Equals [!Ref env, prod]
+
+
+Resources:
+    TbrVPC:
+        Type: AWS::Serverless::Application
+        Properties:
+            Location: stacks/vpc-stack.yml
+            Parameters:
+                env: !Ref env
+
+    # TbrCognito:
+    #     Type: AWS::Serverless::Application
+    #     Properties:
+    #         Location: stacks/cognito-stack.yml
+    #         Parameters:
+    #             env: !Ref env
+
+    GithubConnection:
+        Type: AWS::CodeStarConnections::Connection
+        Properties: 
+            ConnectionName: !Sub 'Tbr_Github_${env}'
+            ProviderType: GitHub
+
+    # TbrApiService:
+    #     Type: AWS::Serverless::Application
+    #     Properties:
+    #         Location: stacks/api/api-service-stack.yml
+    #         Parameters:
+    #             env: !Ref env
+    #             TbrPublicSubnetA: !GetAtt TbrVPC.Outputs.TbrPublicSubnetA
+    #             TbrPublicSubnetB: !GetAtt TbrVPC.Outputs.TbrPublicSubnetB
+    #             TbrVPCSecurityGroup: !GetAtt TbrVPC.Outputs.TbrVPCSecurityGroup
+    #             VPC: !GetAtt TbrVPC.Outputs.TbrVPC
+    #             CICDBucketLocation: !Ref CICDBucketLocation
+    #             RepositoryId: !Ref RepositoryId
+    #             ConnectionArn: !Ref GithubConnection
+    #             CognitoPoolId: !GetAtt TbrCognito.Outputs.CognitoPoolId
+    #             EcsClusterEcsDesiredCount: 1
+    #             ContainerPort: 3000
+    #             ContainerMemory: 1024
+    #             ContainerCpu: 512
+    #             BranchName: "release"
+
+    TbrApp:
+        Type: AWS::Serverless::Application
+        Properties:
+            Location: stacks/app/app-service-stack.yml
+            Parameters:
+                env: !Ref env
+                CICDBucketLocation: !Ref CICDBucketLocation
+                RepositoryId: !Ref RepositoryId
+                ConnectionArn: !Ref GithubConnection
+                AppBranchName: "main"
+                AppRepositoryId: !Ref AppRepositoryId
+                CognitoPoolId: !GetAtt TbrCognito.Outputs.CognitoPoolId
+                CognitoClientId: !GetAtt TbrCognito.Outputs.CognitoClientId
+
+    # TbrAdmin:
+    #     Type: AWS::Serverless::Application
+    #     Properties:
+    #         Location: stacks/admin/admin-service-stack.yml
+    #         Parameters:
+    #             env: !Ref env
+    #             CICDBucketLocation: !Ref CICDBucketLocation
+    #             RepositoryId: !Ref RepositoryId
+    #             ConnectionArn: !Ref GithubConnection
+    #             AdminBranchName: "release"
+    #             AdminRepositoryId: !Ref AdminRepositoryId
+    #             CognitoPoolId: !GetAtt TbrCognito.Outputs.CognitoPoolId
+    #             CognitoClientId: !GetAtt TbrCognito.Outputs.CognitoClientId
+
